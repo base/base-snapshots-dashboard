@@ -8,9 +8,6 @@ const config: Config = {
   ],
   theme: {
     extend: {
-      colors: {
-        "base-blue": "#0052FF",
-      },
       fontFamily: {
         sans: ["var(--font-inter)", "system-ui", "-apple-system", "sans-serif"],
         mono: ["var(--font-mono)", "monospace"],

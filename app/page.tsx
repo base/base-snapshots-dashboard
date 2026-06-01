@@ -13,6 +13,11 @@ type Tab = "mainnet" | "sepolia" | "legacy";
 const DOCS_URL = "https://docs.base.org";
 const SNAPSHOTS_DOCS_URL = "https://docs.base.org/base-chain/node-operators/snapshots";
 
+const BASESCAN: Record<string, string> = {
+  mainnet: "https://basescan.org",
+  sepolia: "https://sepolia.basescan.org",
+};
+
 function formatBytes(bytes: number | null): string {
   if (bytes === null) return "—";
   if (bytes >= 1e12) return `${(bytes / 1e12).toFixed(2)} TB`;
@@ -39,6 +44,11 @@ function formatDate(unixSeconds: number | null): string {
   });
 }
 
+function formatBlock(n: number | null): string {
+  if (!n) return "—";
+  return n.toLocaleString("en-US");
+}
+
 function BaseLogo({ size = 20 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 32 32" fill="none">
@@ -62,7 +72,7 @@ function CopyButton({ url }: { url: string }) {
     <button
       onClick={copy}
       title="Copy download URL"
-      className="text-gray-300 hover:text-gray-500 dark:hover:text-gray-400 transition-colors"
+      className="text-[#c8c8c8] hover:text-[#787878] dark:hover:text-[#999] transition-colors"
     >
       {copied ? (
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -78,26 +88,17 @@ function CopyButton({ url }: { url: string }) {
   );
 }
 
-const BASESCAN: Record<string, string> = {
-  mainnet: "https://basescan.org",
-  sepolia: "https://sepolia.basescan.org",
-};
-
-function formatBlock(n: number | null): string {
-  if (!n) return "—";
-  return n.toLocaleString("en-US");
-}
-
-// Fixed column widths to prevent layout shift between tabs
-const COL_WIDTHS = "grid-cols-[100px_90px_100px_80px_120px_140px_1fr]";
+// Fixed column widths — never change between tabs to avoid layout shift
+const COLS = "grid-cols-[100px_90px_100px_80px_120px_140px_1fr]";
 
 function TableHeader() {
+  const headers = ["Network", "Type", "Size", "Age", "Date (UTC)", "Block", ""];
   return (
-    <div className={`grid ${COL_WIDTHS} gap-x-4 px-5 py-3 border-b border-gray-200 dark:border-gray-700`}>
-      {["Network", "Type", "Size", "Age", "Date (UTC)", "Block", ""].map((h, i) => (
+    <div className={`grid ${COLS} gap-x-4 px-5 py-3 border-b border-[#ebebeb] dark:border-[#21262d]`}>
+      {headers.map((h, i) => (
         <div
           key={i}
-          className={`text-xs font-medium uppercase tracking-wider text-gray-400 dark:text-gray-500 ${i === 6 ? "text-right" : ""}`}
+          className={`text-[11px] font-medium uppercase tracking-wider text-[#787878] ${i === 6 ? "text-right" : ""}`}
         >
           {h}
         </div>
@@ -109,36 +110,15 @@ function TableHeader() {
 function TableRow({ snapshot }: { snapshot: SnapshotData }) {
   const ok = snapshot.status === "available";
   return (
-    <div
-      className={`grid ${COL_WIDTHS} gap-x-4 px-5 py-4 border-b border-gray-100 dark:border-gray-800 last:border-b-0 hover:bg-gray-50 dark:hover:bg-gray-800/40 transition-colors`}
-    >
-      {/* Network */}
-      <div className="text-sm text-gray-700 dark:text-gray-300 capitalize self-center">
-        {snapshot.network}
+    <div className={`grid ${COLS} gap-x-4 px-5 py-3.5 border-b border-[#ebebeb] dark:border-[#21262d] last:border-b-0 hover:bg-[#fafafa] dark:hover:bg-[#161b22] transition-colors items-center`}>
+      <div className="text-sm text-[#000] dark:text-[#e6edf3] capitalize">{snapshot.network}</div>
+      <div className="text-sm font-medium text-[#000] dark:text-[#e6edf3] capitalize">{snapshot.type}</div>
+      <div className="text-sm font-mono text-[#000] dark:text-[#e6edf3]">
+        {ok ? formatBytes(snapshot.sizeBytes) : <span className="text-[#787878] text-xs">{snapshot.status}</span>}
       </div>
-
-      {/* Type */}
-      <div className="text-sm font-medium text-gray-900 dark:text-gray-100 capitalize self-center">
-        {snapshot.type}
-      </div>
-
-      {/* Size */}
-      <div className="text-sm font-mono text-gray-700 dark:text-gray-300 self-center">
-        {ok ? formatBytes(snapshot.sizeBytes) : <span className="text-gray-400 text-xs">{snapshot.status}</span>}
-      </div>
-
-      {/* Age */}
-      <div className="text-sm text-gray-500 dark:text-gray-400 self-center">
-        {formatAge(snapshot.unixTimestamp)}
-      </div>
-
-      {/* Date */}
-      <div className="text-sm text-gray-500 dark:text-gray-400 font-mono self-center">
-        {formatDate(snapshot.unixTimestamp)}
-      </div>
-
-      {/* Block */}
-      <div className="text-sm font-mono text-gray-500 dark:text-gray-400 self-center">
+      <div className="text-sm text-[#787878]">{formatAge(snapshot.unixTimestamp)}</div>
+      <div className="text-sm font-mono text-[#787878]">{formatDate(snapshot.unixTimestamp)}</div>
+      <div className="text-sm font-mono text-[#787878]">
         {snapshot.blockNumber ? (
           <a
             href={`${BASESCAN[snapshot.network]}/block/${snapshot.blockNumber}`}
@@ -150,21 +130,19 @@ function TableRow({ snapshot }: { snapshot: SnapshotData }) {
           </a>
         ) : "—"}
       </div>
-
-      {/* Download */}
-      <div className="flex items-center justify-end gap-2 self-center">
+      <div className="flex items-center justify-end gap-2">
         {ok && snapshot.downloadUrl ? (
           <>
             <CopyButton url={snapshot.downloadUrl} />
             <a
               href={snapshot.downloadUrl}
-              className="text-sm text-[#0052FF] hover:underline font-medium whitespace-nowrap"
+              className="text-sm text-[#0052FF] hover:underline font-medium"
             >
               Download
             </a>
           </>
         ) : (
-          <span className="text-xs text-gray-400">—</span>
+          <span className="text-[#787878] text-xs">—</span>
         )}
       </div>
     </div>
@@ -173,13 +151,10 @@ function TableRow({ snapshot }: { snapshot: SnapshotData }) {
 
 function SkeletonRow() {
   return (
-    <div className={`grid ${COL_WIDTHS} gap-x-4 px-5 py-4 border-b border-gray-100 dark:border-gray-800 last:border-b-0`}>
-      {[80, 60, 72, 48, 96, 88, 64].map((w, i) => (
-        <div key={i} className={`flex items-center ${i === 6 ? "justify-end" : ""}`}>
-          <div
-            className="h-4 bg-gray-100 dark:bg-gray-800 rounded animate-pulse"
-            style={{ width: w }}
-          />
+    <div className={`grid ${COLS} gap-x-4 px-5 py-3.5 border-b border-[#ebebeb] dark:border-[#21262d] last:border-b-0 items-center`}>
+      {[80, 56, 68, 44, 88, 84, 60].map((w, i) => (
+        <div key={i} className={`flex ${i === 6 ? "justify-end" : ""}`}>
+          <div className="h-3.5 bg-[#f0f0f0] dark:bg-[#21262d] rounded animate-pulse" style={{ width: w }} />
         </div>
       ))}
     </div>
@@ -193,12 +168,10 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [dark, setDark] = useState(false);
 
-  // Apply stored theme on mount
   useEffect(() => {
     const stored = localStorage.getItem("theme");
     const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    const useDark = stored === "dark" || (!stored && prefersDark);
-    if (useDark) {
+    if (stored === "dark" || (!stored && prefersDark)) {
       document.documentElement.classList.add("dark");
       setDark(true);
     }
@@ -207,13 +180,8 @@ export default function Home() {
   const toggleDark = () => {
     const next = !dark;
     setDark(next);
-    if (next) {
-      document.documentElement.classList.add("dark");
-      localStorage.setItem("theme", "dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-      localStorage.setItem("theme", "light");
-    }
+    document.documentElement.classList.toggle("dark", next);
+    localStorage.setItem("theme", next ? "dark" : "light");
   };
 
   const fetchData = useCallback(async () => {
@@ -242,43 +210,46 @@ export default function Home() {
   ];
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+    <div className="min-h-screen bg-white dark:bg-[#0f1117] text-[#000] dark:text-[#e6edf3]">
+
       {/* Header */}
-      <header className="border-b border-gray-200 dark:border-gray-700">
+      <header className="border-b border-[#ebebeb] dark:border-[#21262d]">
         <div className="max-w-5xl mx-auto px-6 h-14 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <BaseLogo size={20} />
-            <span className="font-semibold text-gray-900 dark:text-white tracking-tight">
+            <span className="text-sm font-medium tracking-tight text-[#000] dark:text-white">
               Base Snapshots
             </span>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4">
+            {data && (
+              <span className="text-xs text-[#787878] hidden sm:block tabular-nums">
+                {new Date(data.fetchedAt).toLocaleTimeString()}
+              </span>
+            )}
             <a
               href={DOCS_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-sm text-gray-500 dark:text-gray-400 hover:text-[#0052FF] dark:hover:text-[#4d8ef0] transition-colors hidden sm:block"
+              className="text-sm text-[#787878] hover:text-[#000] dark:hover:text-white transition-colors hidden sm:block"
             >
-              Docs ↗
+              Docs
             </a>
-
-            <div className="w-px h-4 bg-gray-200 dark:bg-gray-700 hidden sm:block" />
             <button
               onClick={toggleDark}
-              title={dark ? "Switch to light mode" : "Switch to dark mode"}
-              className="p-1.5 rounded text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
+              title={dark ? "Light mode" : "Dark mode"}
+              className="text-[#787878] hover:text-[#000] dark:hover:text-white transition-colors"
             >
               {dark ? (
-                /* Sun */
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
-                  <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
-                  <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
-                  <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/>
+                  <line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                  <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/>
+                  <line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                  <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
                 </svg>
               ) : (
-                /* Moon */
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
                 </svg>
               )}
@@ -286,7 +257,7 @@ export default function Home() {
             <button
               onClick={fetchData}
               disabled={loading}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-sm border border-gray-200 dark:border-gray-700 rounded-md text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600 disabled:opacity-40 transition-colors"
+              className="flex items-center gap-1.5 text-sm text-[#787878] hover:text-[#000] dark:hover:text-white disabled:opacity-40 transition-colors"
             >
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={loading ? "animate-spin" : ""}>
                 <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/>
@@ -299,35 +270,30 @@ export default function Home() {
       </header>
 
       <main className="max-w-5xl mx-auto px-6 py-8">
-        {/* Page title + description */}
+
+        {/* Title */}
         <div className="mb-6">
-          <h1 className="text-xl font-semibold text-gray-900 dark:text-white mb-1">
+          <h1 className="text-lg font-medium tracking-tight text-[#000] dark:text-white mb-1">
             Node Snapshots
           </h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            Pre-built snapshots for faster node sync. All snapshots use reth and are
-            compressed with zstd (<code className="font-mono text-xs">.tar.zst</code>).{" "}
-            <a
-              href={SNAPSHOTS_DOCS_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-[#0052FF] hover:underline"
-            >
+          <p className="text-sm text-[#787878]">
+            Pre-built snapshots for faster node sync using reth, compressed with zstd.{" "}
+            <a href={SNAPSHOTS_DOCS_URL} target="_blank" rel="noopener noreferrer" className="text-[#0052FF] hover:underline">
               View setup instructions →
             </a>
           </p>
         </div>
 
         {/* Tabs */}
-        <div className="flex border-b border-gray-200 dark:border-gray-700 mb-0">
+        <div className="flex border-b border-[#ebebeb] dark:border-[#21262d] mb-0">
           {TABS.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`px-4 py-2.5 text-sm font-medium border-b-2 -mb-px transition-colors ${
+              className={`px-4 py-2.5 text-sm border-b-2 -mb-px transition-colors ${
                 activeTab === tab.id
-                  ? "border-[#0052FF] text-[#0052FF]"
-                  : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+                  ? "border-[#0052FF] text-[#0052FF] font-medium"
+                  : "border-transparent text-[#787878] hover:text-[#000] dark:hover:text-white"
               }`}
             >
               {tab.label}
@@ -336,35 +302,31 @@ export default function Home() {
         </div>
 
         {/* Table */}
-        <div className="border border-gray-200 dark:border-gray-700 border-t-0 rounded-b-lg overflow-hidden bg-white dark:bg-gray-900">
+        <div className="border border-[#ebebeb] dark:border-[#21262d] border-t-0 rounded-b-[10px] overflow-hidden">
           <TableHeader />
-
           {error ? (
             <div className="py-10 text-center">
-              <p className="text-sm text-gray-500 mb-3">{error}</p>
-              <button onClick={fetchData} className="text-sm text-[#0052FF] hover:underline">
-                Retry
-              </button>
+              <p className="text-sm text-[#787878] mb-3">{error}</p>
+              <button onClick={fetchData} className="text-sm text-[#0052FF] hover:underline">Retry</button>
             </div>
           ) : loading ? (
             Array.from({ length: skeletonCount }).map((_, i) => <SkeletonRow key={i} />)
           ) : tabSnapshots.length === 0 ? (
-            <div className="py-10 text-center text-sm text-gray-400">
-              No snapshots available
-            </div>
+            <div className="py-10 text-center text-sm text-[#787878]">No snapshots available</div>
           ) : (
             tabSnapshots.map((s) => <TableRow key={s.id} snapshot={s} />)
           )}
         </div>
 
-        {/* Footer note */}
-        <p className="mt-4 text-xs text-gray-400 dark:text-gray-500">
+        {/* Footnote */}
+        <p className="mt-4 text-xs text-[#787878]">
           Extract with{" "}
-          <code className="font-mono bg-gray-50 dark:bg-gray-800 px-1 rounded">
+          <code className="font-mono bg-[#fafafa] dark:bg-[#161b22] border border-[#ebebeb] dark:border-[#21262d] px-1 rounded">
             tar -I zstd -xf &lt;file&gt;
           </code>
-          . The numeric suffix in each filename is a Unix timestamp.
+          . Block numbers are estimates based on a 2-second block time.
         </p>
+
       </main>
     </div>
   );
