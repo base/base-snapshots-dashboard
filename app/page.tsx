@@ -78,16 +78,26 @@ function CopyButton({ url }: { url: string }) {
   );
 }
 
+const BASESCAN: Record<string, string> = {
+  mainnet: "https://basescan.org",
+  sepolia: "https://sepolia.basescan.org",
+};
+
+function formatBlock(n: number | null): string {
+  if (!n) return "—";
+  return n.toLocaleString("en-US");
+}
+
 // Fixed column widths to prevent layout shift between tabs
-const COL_WIDTHS = "grid-cols-[120px_100px_110px_90px_130px_1fr]";
+const COL_WIDTHS = "grid-cols-[100px_90px_100px_80px_120px_140px_1fr]";
 
 function TableHeader() {
   return (
     <div className={`grid ${COL_WIDTHS} gap-x-4 px-5 py-3 border-b border-gray-200 dark:border-gray-700`}>
-      {["Network", "Type", "Size", "Age", "Date (UTC)", ""].map((h, i) => (
+      {["Network", "Type", "Size", "Age", "Date (UTC)", "Block", ""].map((h, i) => (
         <div
           key={i}
-          className={`text-xs font-medium uppercase tracking-wider text-gray-400 dark:text-gray-500 ${i === 5 ? "text-right" : ""}`}
+          className={`text-xs font-medium uppercase tracking-wider text-gray-400 dark:text-gray-500 ${i === 6 ? "text-right" : ""}`}
         >
           {h}
         </div>
@@ -127,6 +137,20 @@ function TableRow({ snapshot }: { snapshot: SnapshotData }) {
         {formatDate(snapshot.unixTimestamp)}
       </div>
 
+      {/* Block */}
+      <div className="text-sm font-mono text-gray-500 dark:text-gray-400 self-center">
+        {snapshot.blockNumber ? (
+          <a
+            href={`${BASESCAN[snapshot.network]}/block/${snapshot.blockNumber}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-[#0052FF] transition-colors"
+          >
+            {formatBlock(snapshot.blockNumber)}
+          </a>
+        ) : "—"}
+      </div>
+
       {/* Download */}
       <div className="flex items-center justify-end gap-2 self-center">
         {ok && snapshot.downloadUrl ? (
@@ -150,8 +174,8 @@ function TableRow({ snapshot }: { snapshot: SnapshotData }) {
 function SkeletonRow() {
   return (
     <div className={`grid ${COL_WIDTHS} gap-x-4 px-5 py-4 border-b border-gray-100 dark:border-gray-800 last:border-b-0`}>
-      {[80, 60, 72, 48, 96, 64].map((w, i) => (
-        <div key={i} className={`flex items-center ${i === 5 ? "justify-end" : ""}`}>
+      {[80, 60, 72, 48, 96, 88, 64].map((w, i) => (
+        <div key={i} className={`flex items-center ${i === 6 ? "justify-end" : ""}`}>
           <div
             className="h-4 bg-gray-100 dark:bg-gray-800 rounded animate-pulse"
             style={{ width: w }}
