@@ -358,23 +358,13 @@ export default function Home() {
         </div>
 
         {/* Footer note */}
-        <div className="mt-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <p className="text-xs text-gray-400 dark:text-gray-500">
-            Extract with{" "}
-            <code className="font-mono bg-gray-50 dark:bg-gray-800 px-1 rounded">
-              tar -I zstd -xf &lt;file&gt;
-            </code>
-            . The numeric suffix in each filename is a Unix timestamp.
-          </p>
-          <a
-            href={SNAPSHOTS_DOCS_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-xs text-[#0052FF] hover:underline whitespace-nowrap"
-          >
-            Full documentation →
-          </a>
-        </div>
+        <p className="mt-4 text-xs text-gray-400 dark:text-gray-500">
+          Extract with{" "}
+          <code className="font-mono bg-gray-50 dark:bg-gray-800 px-1 rounded">
+            tar -I zstd -xf &lt;file&gt;
+          </code>
+          . The numeric suffix in each filename is a Unix timestamp.
+        </p>
       </main>
     </div>
   );
