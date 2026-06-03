@@ -222,11 +222,6 @@ export default function Home() {
             </span>
           </div>
           <div className="flex items-center gap-4">
-            {data && (
-              <span className="text-xs text-[#787878] hidden sm:block tabular-nums">
-                {new Date(data.fetchedAt).toLocaleTimeString()}
-              </span>
-            )}
             <a
               href={DOCS_URL}
               target="_blank"
