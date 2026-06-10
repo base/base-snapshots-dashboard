@@ -4,14 +4,14 @@ export interface SnapshotData {
   id: string;
   network: "mainnet" | "sepolia";
   client: string;
-  type: "pruned" | "archive" | "proofs" | "full";
+  type: "pruned" | "archive" | "proofs" | "legacy-full";
   filename: string | null;
   downloadUrl: string | null;
   sizeBytes: number | null;
   lastModified: string | null;
   unixTimestamp: number | null;
   blockNumber: number | null;
-  tab: "mainnet" | "sepolia" | "legacy";
+  tab: "mainnet" | "sepolia";
   status: "available" | "unavailable" | "error";
 }
 
@@ -19,9 +19,9 @@ interface SnapshotConfig {
   id: string;
   network: "mainnet" | "sepolia";
   client: string;
-  type: "pruned" | "archive" | "proofs" | "full";
+  type: "pruned" | "archive" | "proofs" | "legacy-full";
   baseUrl: string;
-  tab: "mainnet" | "sepolia" | "legacy";
+  tab: "mainnet" | "sepolia";
 }
 
 const SNAPSHOT_CONFIGS: SnapshotConfig[] = [
@@ -80,17 +80,17 @@ const SNAPSHOT_CONFIGS: SnapshotConfig[] = [
     id: "mainnet-full",
     network: "mainnet",
     client: "reth",
-    type: "full",
+    type: "legacy-full",
     baseUrl: "https://mainnet-full-snapshots.base.org",
-    tab: "legacy",
+    tab: "mainnet",
   },
   {
     id: "sepolia-full",
     network: "sepolia",
     client: "reth",
-    type: "full",
+    type: "legacy-full",
     baseUrl: "https://sepolia-full-snapshots.base.org",
-    tab: "legacy",
+    tab: "sepolia",
   },
 ];
 

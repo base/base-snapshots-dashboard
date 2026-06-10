@@ -8,9 +8,10 @@ interface ApiResponse {
   fetchedAt: string;
 }
 
-type Tab = "mainnet" | "sepolia" | "legacy";
+type Tab = "mainnet" | "sepolia";
 
 const DOCS_URL = "https://docs.base.org";
+const GITHUB_URL = "https://github.com/base/base-snapshots-dashboard";
 const SNAPSHOTS_DOCS_URL = "https://docs.base.org/base-chain/node-operators/snapshots";
 
 const BASESCAN: Record<string, string> = {
@@ -49,18 +50,6 @@ function formatBlock(n: number | null): string {
   return n.toLocaleString("en-US");
 }
 
-function BaseLogo({ size = 20 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 32 32" fill="none">
-      <circle cx="16" cy="16" r="16" fill="#0052FF" />
-      <path
-        d="M16 6.4C10.698 6.4 6.4 10.698 6.4 16C6.4 21.302 10.698 25.6 16 25.6C21.069 25.6 25.21 21.709 25.573 16.74H16V15.26H25.573C25.21 10.291 21.069 6.4 16 6.4Z"
-        fill="white"
-      />
-    </svg>
-  );
-}
-
 function CopyButton({ url }: { url: string }) {
   const [copied, setCopied] = useState(false);
   const copy = async () => {
@@ -89,16 +78,16 @@ function CopyButton({ url }: { url: string }) {
 }
 
 // Fixed column widths — never change between tabs to avoid layout shift
-const COLS = "grid-cols-[100px_90px_100px_80px_120px_140px_1fr]";
+const COLS = "grid-cols-[90px_100px_80px_120px_140px_1fr]";
 
 function TableHeader() {
-  const headers = ["Network", "Type", "Size", "Age", "Date (UTC)", "Block", ""];
+  const headers = ["Type", "Size", "Age", "Date (UTC)", "Block", ""];
   return (
     <div className={`grid ${COLS} gap-x-4 px-5 py-3 border-b border-[#ebebeb] dark:border-[#21262d]`}>
       {headers.map((h, i) => (
         <div
           key={i}
-          className={`text-[11px] font-medium uppercase tracking-wider text-[#787878] ${i === 6 ? "text-right" : ""}`}
+          className={`text-[11px] font-bold uppercase tracking-wider text-[#787878] ${i === 5 ? "text-right" : ""}`}
         >
           {h}
         </div>
@@ -111,9 +100,8 @@ function TableRow({ snapshot }: { snapshot: SnapshotData }) {
   const ok = snapshot.status === "available";
   return (
     <div className={`grid ${COLS} gap-x-4 px-5 py-3.5 border-b border-[#ebebeb] dark:border-[#21262d] last:border-b-0 hover:bg-[#fafafa] dark:hover:bg-[#161b22] transition-colors items-center`}>
-      <div className="text-sm text-[#000] dark:text-[#e6edf3] capitalize">{snapshot.network}</div>
-      <div className="text-sm font-medium text-[#000] dark:text-[#e6edf3] capitalize">{snapshot.type}</div>
-      <div className="text-sm font-mono text-[#000] dark:text-[#e6edf3]">
+      <div className="text-sm text-[#787878] capitalize">{snapshot.type === "legacy-full" ? "Full (Legacy)" : snapshot.type}</div>
+      <div className="text-sm font-mono text-[#787878]">
         {ok ? formatBytes(snapshot.sizeBytes) : <span className="text-[#787878] text-xs">{snapshot.status}</span>}
       </div>
       <div className="text-sm text-[#787878]">{formatAge(snapshot.unixTimestamp)}</div>
@@ -136,7 +124,7 @@ function TableRow({ snapshot }: { snapshot: SnapshotData }) {
             <CopyButton url={snapshot.downloadUrl} />
             <a
               href={snapshot.downloadUrl}
-              className="text-sm text-[#0052FF] hover:underline font-medium"
+              className="text-sm text-[#0052FF] hover:underline"
             >
               Download
             </a>
@@ -152,8 +140,8 @@ function TableRow({ snapshot }: { snapshot: SnapshotData }) {
 function SkeletonRow() {
   return (
     <div className={`grid ${COLS} gap-x-4 px-5 py-3.5 border-b border-[#ebebeb] dark:border-[#21262d] last:border-b-0 items-center`}>
-      {[80, 56, 68, 44, 88, 84, 60].map((w, i) => (
-        <div key={i} className={`flex ${i === 6 ? "justify-end" : ""}`}>
+      {[56, 68, 44, 88, 84, 60].map((w, i) => (
+        <div key={i} className={`flex ${i === 5 ? "justify-end" : ""}`}>
           <div className="h-3.5 bg-[#f0f0f0] dark:bg-[#21262d] rounded animate-pulse" style={{ width: w }} />
         </div>
       ))}
@@ -201,24 +189,23 @@ export default function Home() {
   useEffect(() => { fetchData(); }, [fetchData]);
 
   const tabSnapshots = data?.snapshots.filter((s) => s.tab === activeTab) ?? [];
-  const skeletonCount = activeTab === "legacy" ? 2 : 3;
+  const skeletonCount = 4;
 
   const TABS: { id: Tab; label: string }[] = [
     { id: "mainnet", label: "Mainnet" },
     { id: "sepolia", label: "Sepolia" },
-    { id: "legacy", label: "Legacy" },
   ];
 
   return (
-    <div className="min-h-screen bg-white dark:bg-[#0f1117] text-[#000] dark:text-[#e6edf3]">
+    <div className="min-h-screen bg-white dark:bg-[#0f1117] text-[#787878]">
 
       {/* Header */}
       <header className="border-b border-[#ebebeb] dark:border-[#21262d]">
         <div className="max-w-5xl mx-auto px-6 h-14 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <BaseLogo size={20} />
-            <span className="text-sm font-medium tracking-tight text-[#000] dark:text-white">
-              Base Snapshots
+            <div className="w-4 h-4 bg-[#0052FF] flex-shrink-0" />
+            <span className="text-xl tracking-tight text-[#000] dark:text-white">
+              <span className="font-bold">base</span><span className="font-normal ml-1.5">snapshots</span>
             </span>
           </div>
           <div className="flex items-center gap-4">
@@ -229,6 +216,17 @@ export default function Home() {
               className="text-sm text-[#787878] hover:text-[#000] dark:hover:text-white transition-colors hidden sm:block"
             >
               Docs
+            </a>
+            <a
+              href={GITHUB_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              title="View on GitHub"
+              className="text-[#787878] hover:text-[#000] dark:hover:text-white transition-colors hidden sm:block"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.009-.868-.013-1.703-2.782.604-3.369-1.342-3.369-1.342-.454-1.155-1.11-1.463-1.11-1.463-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0 1 12 6.836a9.59 9.59 0 0 1 2.504.337c1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.741 0 .267.18.578.688.48C19.138 20.163 22 16.418 22 12c0-5.523-4.477-10-10-10z"/>
+              </svg>
             </a>
             <button
               onClick={toggleDark}
@@ -268,9 +266,6 @@ export default function Home() {
 
         {/* Title */}
         <div className="mb-6">
-          <h1 className="text-lg font-medium tracking-tight text-[#000] dark:text-white mb-1">
-            Node Snapshots
-          </h1>
           <p className="text-sm text-[#787878]">
             Pre-built snapshots for faster node sync using reth, compressed with zstd.{" "}
             <a href={SNAPSHOTS_DOCS_URL} target="_blank" rel="noopener noreferrer" className="text-[#0052FF] hover:underline">

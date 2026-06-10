@@ -21,10 +21,6 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
-## Deployment
-
-Deploy to [Vercel](https://vercel.com) or any platform that supports Next.js. No environment variables required — snapshot metadata is fetched live from `*.base.org` on each request.
-
 ## Docs
 
 [docs.base.org/base-chain/node-operators/snapshots](https://docs.base.org/base-chain/node-operators/snapshots)
