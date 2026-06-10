@@ -61,7 +61,7 @@ function CopyButton({ url }: { url: string }) {
     <button
       onClick={copy}
       title="Copy download URL"
-      className="text-[#c8c8c8] hover:text-[#787878] dark:hover:text-[#999] transition-colors"
+      className="text-icon-muted hover:text-icon-hover dark:hover:text-icon-dark-hover transition-colors"
     >
       {copied ? (
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -87,7 +87,7 @@ function TableHeader() {
       {headers.map((h, i) => (
         <div
           key={i}
-          className={`text-[11px] font-bold uppercase tracking-wider text-[#787878] ${i === 5 ? "text-right" : ""}`}
+          className={`text-[11px] font-bold uppercase tracking-wider text-table-subtle dark:text-table-dark-subtle ${i === 5 ? "text-right" : ""}`}
         >
           {h}
         </div>
@@ -100,19 +100,19 @@ function TableRow({ snapshot }: { snapshot: SnapshotData }) {
   const ok = snapshot.status === "available";
   return (
     <div className={`grid ${COLS} gap-x-4 px-5 py-3.5 border-b border-[#ebebeb] dark:border-[#21262d] last:border-b-0 hover:bg-[#fafafa] dark:hover:bg-[#161b22] transition-colors items-center`}>
-      <div className="text-sm text-[#787878] capitalize">{snapshot.type === "legacy-full" ? "Full (Legacy)" : snapshot.type}</div>
-      <div className="text-sm font-mono text-[#787878]">
-        {ok ? formatBytes(snapshot.sizeBytes) : <span className="text-[#787878] text-xs">{snapshot.status}</span>}
+      <div className="text-sm text-table dark:text-table-dark capitalize">{snapshot.type === "legacy-full" ? "Full (Legacy)" : snapshot.type}</div>
+      <div className="text-sm font-mono text-table dark:text-table-dark">
+        {ok ? formatBytes(snapshot.sizeBytes) : <span className="text-xs text-table-subtle dark:text-table-dark-subtle">{snapshot.status}</span>}
       </div>
-      <div className="text-sm text-[#787878]">{formatAge(snapshot.unixTimestamp)}</div>
-      <div className="text-sm font-mono text-[#787878]">{formatDate(snapshot.unixTimestamp)}</div>
-      <div className="text-sm font-mono text-[#787878]">
+      <div className="text-sm text-table dark:text-table-dark">{formatAge(snapshot.unixTimestamp)}</div>
+      <div className="text-sm font-mono text-table dark:text-table-dark">{formatDate(snapshot.unixTimestamp)}</div>
+      <div className="text-sm font-mono text-table dark:text-table-dark">
         {snapshot.blockNumber ? (
           <a
             href={`${BASESCAN[snapshot.network]}/block/${snapshot.blockNumber}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="hover:text-[#0052FF] transition-colors"
+            className="hover:text-link dark:hover:text-link-dark transition-colors"
           >
             {formatBlock(snapshot.blockNumber)}
           </a>
@@ -124,13 +124,13 @@ function TableRow({ snapshot }: { snapshot: SnapshotData }) {
             <CopyButton url={snapshot.downloadUrl} />
             <a
               href={snapshot.downloadUrl}
-              className="text-sm text-[#0052FF] hover:underline"
+              className="text-sm text-link dark:text-link-dark dark:hover:text-link-dark-hover hover:underline"
             >
               Download
             </a>
           </>
         ) : (
-          <span className="text-[#787878] text-xs">—</span>
+          <span className="text-xs text-table-subtle dark:text-table-dark-subtle">—</span>
         )}
       </div>
     </div>
@@ -197,13 +197,13 @@ export default function Home() {
   ];
 
   return (
-    <div className="min-h-screen bg-white dark:bg-[#0f1117] text-[#787878]">
+    <div className="min-h-screen bg-white dark:bg-[#0f1117] text-content dark:text-content-dark">
 
       {/* Header */}
       <header className="border-b border-[#ebebeb] dark:border-[#21262d]">
         <div className="max-w-5xl mx-auto px-6 h-14 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="w-4 h-4 bg-[#0052FF] flex-shrink-0" />
+            <div className="w-4 h-4 bg-brand flex-shrink-0" />
             <span className="text-xl tracking-tight text-[#000] dark:text-white">
               <span className="font-bold">base</span><span className="font-normal ml-1.5">snapshots</span>
             </span>
@@ -213,7 +213,7 @@ export default function Home() {
               href={DOCS_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-sm text-[#787878] hover:text-[#000] dark:hover:text-white transition-colors hidden sm:block"
+              className="text-sm text-content-subtle dark:text-content-dark-subtle hover:text-[#000] dark:hover:text-white transition-colors hidden sm:block"
             >
               Docs
             </a>
@@ -222,7 +222,7 @@ export default function Home() {
               target="_blank"
               rel="noopener noreferrer"
               title="View on GitHub"
-              className="text-[#787878] hover:text-[#000] dark:hover:text-white transition-colors hidden sm:block"
+              className="text-content-subtle dark:text-content-dark-subtle hover:text-[#000] dark:hover:text-white transition-colors hidden sm:block"
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.009-.868-.013-1.703-2.782.604-3.369-1.342-3.369-1.342-.454-1.155-1.11-1.463-1.11-1.463-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0 1 12 6.836a9.59 9.59 0 0 1 2.504.337c1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.741 0 .267.18.578.688.48C19.138 20.163 22 16.418 22 12c0-5.523-4.477-10-10-10z"/>
@@ -231,7 +231,7 @@ export default function Home() {
             <button
               onClick={toggleDark}
               title={dark ? "Light mode" : "Dark mode"}
-              className="text-[#787878] hover:text-[#000] dark:hover:text-white transition-colors"
+              className="text-content-subtle dark:text-content-dark-subtle hover:text-[#000] dark:hover:text-white transition-colors"
             >
               {dark ? (
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -250,7 +250,7 @@ export default function Home() {
             <button
               onClick={fetchData}
               disabled={loading}
-              className="flex items-center gap-1.5 text-sm text-[#787878] hover:text-[#000] dark:hover:text-white disabled:opacity-40 transition-colors"
+              className="flex items-center gap-1.5 text-sm text-content-subtle dark:text-content-dark-subtle hover:text-[#000] dark:hover:text-white disabled:opacity-40 transition-colors"
             >
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={loading ? "animate-spin" : ""}>
                 <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/>
@@ -266,9 +266,9 @@ export default function Home() {
 
         {/* Title */}
         <div className="mb-6">
-          <p className="text-sm text-[#787878]">
+          <p className="text-sm text-content dark:text-content-dark">
             Pre-built snapshots for faster node sync using reth, compressed with zstd.{" "}
-            <a href={SNAPSHOTS_DOCS_URL} target="_blank" rel="noopener noreferrer" className="text-[#0052FF] hover:underline">
+            <a href={SNAPSHOTS_DOCS_URL} target="_blank" rel="noopener noreferrer" className="text-link dark:text-link-dark dark:hover:text-link-dark-hover hover:underline">
               View setup instructions →
             </a>
           </p>
@@ -282,8 +282,8 @@ export default function Home() {
               onClick={() => setActiveTab(tab.id)}
               className={`px-4 py-2.5 text-sm border-b-2 -mb-px transition-colors ${
                 activeTab === tab.id
-                  ? "border-[#0052FF] text-[#0052FF] font-medium"
-                  : "border-transparent text-[#787878] hover:text-[#000] dark:hover:text-white"
+                  ? "border-link dark:border-link-dark text-link dark:text-link-dark dark:hover:text-link-dark-hover font-medium"
+                  : "border-transparent text-content-subtle dark:text-content-dark-subtle hover:text-[#000] dark:hover:text-white"
               }`}
             >
               {tab.label}
@@ -296,20 +296,20 @@ export default function Home() {
           <TableHeader />
           {error ? (
             <div className="py-10 text-center">
-              <p className="text-sm text-[#787878] mb-3">{error}</p>
-              <button onClick={fetchData} className="text-sm text-[#0052FF] hover:underline">Retry</button>
+              <p className="text-sm text-content dark:text-content-dark mb-3">{error}</p>
+              <button onClick={fetchData} className="text-sm text-link dark:text-link-dark dark:hover:text-link-dark-hover hover:underline">Retry</button>
             </div>
           ) : loading ? (
             Array.from({ length: skeletonCount }).map((_, i) => <SkeletonRow key={i} />)
           ) : tabSnapshots.length === 0 ? (
-            <div className="py-10 text-center text-sm text-[#787878]">No snapshots available</div>
+            <div className="py-10 text-center text-sm text-content dark:text-content-dark">No snapshots available</div>
           ) : (
             tabSnapshots.map((s) => <TableRow key={s.id} snapshot={s} />)
           )}
         </div>
 
         {/* Footnote */}
-        <p className="mt-4 text-xs text-[#787878]">
+        <p className="mt-4 text-xs text-content-subtle dark:text-content-dark-subtle">
           Extract with{" "}
           <code className="font-mono bg-[#fafafa] dark:bg-[#161b22] border border-[#ebebeb] dark:border-[#21262d] px-1 rounded">
             tar -I zstd -xf &lt;file&gt;
