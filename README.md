@@ -8,7 +8,6 @@ A simple dashboard for browsing and downloading the latest Base node snapshots.
 |-----|------|
 | Mainnet | Pruned, Archive, Proofs |
 | Sepolia | Pruned, Archive, Proofs |
-| Legacy | Full (mainnet + sepolia) |
 
 All snapshots use [reth](https://reth.rs) and are compressed with zstd (`.tar.zst`).
 
