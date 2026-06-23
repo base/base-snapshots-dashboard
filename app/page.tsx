@@ -100,7 +100,7 @@ function TableRow({ snapshot }: { snapshot: SnapshotData }) {
   const ok = snapshot.status === "available";
   return (
     <div className={`grid ${COLS} gap-x-4 px-5 py-3.5 border-b border-[#ebebeb] dark:border-[#21262d] last:border-b-0 hover:bg-[#fafafa] dark:hover:bg-[#161b22] transition-colors items-center`}>
-      <div className="text-sm text-table dark:text-table-dark capitalize">{snapshot.type === "legacy-full" ? "Full (Legacy)" : snapshot.type}</div>
+      <div className="text-sm text-table dark:text-table-dark capitalize">{snapshot.type}</div>
       <div className="text-sm font-mono text-table dark:text-table-dark">
         {ok ? formatBytes(snapshot.sizeBytes) : <span className="text-xs text-table-subtle dark:text-table-dark-subtle">{snapshot.status}</span>}
       </div>
