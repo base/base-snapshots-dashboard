@@ -119,7 +119,22 @@ async function fetchSnapshotData(config: SnapshotConfig): Promise<Omit<SnapshotD
     const filename = (await latestRes.text()).trim();
     const downloadUrl = `${config.baseUrl}/${filename}`;
 
-    const headRes = await fetch(downloadUrl, { method: "HEAD", cache: "no-store" });
+   const headRes = await fetch(downloadUrl, {
+  method: "HEAD",
+  cache: "no-store",
+  });
+
+  if (!headRes.ok) {
+  return {
+    ...config,
+    filename: null,
+    downloadUrl: null,
+    sizeBytes: null,
+    lastModified: null,
+    unixTimestamp: null,
+    status: "unavailable",
+  };
+}
 
     const contentLength = headRes.headers.get("content-length");
     const sizeBytes = contentLength ? parseInt(contentLength) : null;
